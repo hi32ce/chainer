@@ -45,9 +45,11 @@ class PreprocessedDataset(chainer.dataset.DatasetMixin):
         crop_size = self.crop_size
 
         image, label = self.base[i]
-        _, h, w = image.shape
+        c, h, w = image.shape
+        if c < 3:
+            image = np.resize(image, (3, h, w))
 
-        if self.random:
+        if h != self.crop_size or w != self.crop_size and self.random:
             # Randomly crop a region and flip the image
             top = random.randint(0, h - crop_size - 1)
             left = random.randint(0, w - crop_size - 1)
