@@ -18,6 +18,8 @@ import chainer
 from chainer import training
 from chainer.training import extensions
 
+from chainerui.utils import save_args
+
 import alex
 import googlenet
 import googlenetbn
@@ -109,6 +111,7 @@ def main():
     parser.add_argument('--test', action='store_true')
     parser.set_defaults(test=False)
     args = parser.parse_args()
+    save_args(args, args.out)
 
     # Initialize the model to train
     model = archs[args.arch]()
