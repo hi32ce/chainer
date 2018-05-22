@@ -145,7 +145,7 @@ def main():
         train_iter, optimizer, device=args.gpu)
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), args.out)
 
-    val_interval = (1 if args.test else 100000), 'iteration'
+    val_interval = (1 if args.test else 1000), 'iteration'
     log_interval = (1 if args.test else 1000), 'iteration'
 
     trainer.extend(extensions.Evaluator(val_iter, model, device=args.gpu),
