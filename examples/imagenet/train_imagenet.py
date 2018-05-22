@@ -135,7 +135,8 @@ def main():
         val, args.val_batchsize, repeat=False, n_processes=args.loaderjob)
 
     # Set up an optimizer
-    optimizer = chainer.optimizers.MomentumSGD(lr=0.01, momentum=0.9)
+    #optimizer = chainer.optimizers.MomentumSGD(lr=0.001, momentum=0.9)
+    optimizer = chainer.optimizers.MomentumSGD(lr=0.1, momentum=0.9)
     optimizer.setup(model)
 
     # Set up a trainer
@@ -148,6 +149,7 @@ def main():
 
     trainer.extend(extensions.Evaluator(val_iter, model, device=args.gpu),
                    trigger=val_interval)
+    trainer.extend(extensions.ExponentialShift('lr', 0.1), trigger=(500, 'epoch'))
     trainer.extend(extensions.dump_graph('main/loss'))
     trainer.extend(extensions.snapshot(), trigger=val_interval)
     trainer.extend(extensions.snapshot_object(
