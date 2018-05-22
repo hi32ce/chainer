@@ -138,6 +138,7 @@ def main():
     #optimizer = chainer.optimizers.MomentumSGD(lr=0.001, momentum=0.9)
     optimizer = chainer.optimizers.MomentumSGD(lr=0.1, momentum=0.9)
     optimizer.setup(model)
+    optimizer.add_hook(chainer.optimizer.WeightDecay(1e-4))
 
     # Set up a trainer
     updater = training.updaters.StandardUpdater(
