@@ -25,6 +25,7 @@ import googlenet
 import googlenetbn
 import nin
 import resnet50
+import resnet101
 
 
 class PreprocessedDataset(chainer.dataset.DatasetMixin):
@@ -80,6 +81,8 @@ def main():
         'nin': nin.NIN,
         'resnet50': resnet50.ResNet50,
         'resnext50': resnet50.ResNeXt50,
+        'resnet101': resnet101.ResNet101,
+        'resnext101': resnet101.ResNeXt101,
     }
 
     parser = argparse.ArgumentParser(
