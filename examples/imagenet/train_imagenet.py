@@ -112,7 +112,9 @@ def main():
     parser.add_argument('--val_batchsize', '-b', type=int, default=250,
                         help='Validation minibatch size')
     parser.add_argument('--test', action='store_true')
+    parser.add_argument('--org', action='store_true')
     parser.set_defaults(test=False)
+    parser.set_defaults(org=False)
     args = parser.parse_args()
     save_args(args, args.out)
 
@@ -138,10 +140,13 @@ def main():
         val, args.val_batchsize, repeat=False, n_processes=args.loaderjob)
 
     # Set up an optimizer
-    #optimizer = chainer.optimizers.MomentumSGD(lr=0.001, momentum=0.9)
-    optimizer = chainer.optimizers.MomentumSGD(lr=0.1, momentum=0.9)
+    if args.org:
+        optimizer = chainer.optimizers.MomentumSGD(lr=0.01, momentum=0.9)
+    else:
+        optimizer = chainer.optimizers.MomentumSGD(lr=0.1, momentum=0.9)
     optimizer.setup(model)
-    optimizer.add_hook(chainer.optimizer.WeightDecay(1e-4))
+    if args.org != True:
+        optimizer.add_hook(chainer.optimizer.WeightDecay(1e-4))
 
     # Set up a trainer
     updater = training.updaters.StandardUpdater(
@@ -153,7 +158,8 @@ def main():
 
     trainer.extend(extensions.Evaluator(val_iter, model, device=args.gpu),
                    trigger=val_interval)
-    trainer.extend(extensions.ExponentialShift('lr', 0.1), trigger=(500, 'epoch'))
+    if args.org != True:
+        trainer.extend(extensions.ExponentialShift('lr', 0.1), trigger=(400, 'epoch'))
     trainer.extend(extensions.dump_graph('main/loss'))
     trainer.extend(extensions.snapshot(), trigger=val_interval)
     trainer.extend(extensions.snapshot_object(
