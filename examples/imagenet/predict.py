@@ -69,8 +69,12 @@ if __name__ == '__main__':
         pred = model.predict(x_data)
     pred = chainer.cuda.to_cpu(pred.data)
 
-    with open('data/synset_words.txt') as f:
-        synset = f.read().split('\n')[:-1]
+    #with open('data/synset_words.txt') as f:
+    #    synset = f.read().split('\n')[:-1]
 
-    for i in np.argsort(pred)[0][-1::-1][:5]:
-        print(synset[i])
+    output = '' 
+    for i in np.argsort(pred)[0][-1::-1][:3]:
+        #print(synset[i])
+        output = output + '{}={} '.format(i, pred[0][i])
+
+    print(output)
