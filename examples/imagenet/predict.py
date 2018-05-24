@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import argparse
 import chainer
-import cv2
+from PIL import Image 
 import numpy as np
 import os
 
@@ -43,10 +43,21 @@ if __name__ == '__main__':
 
     model = archs[args.arch]()
     chainer.serializers.load_npz(args.model, model)
+
+    img = Image.open(args.img)
+    img = img.resize((model.insize, model.insize), Image.ANTIALIAS)
     mean = np.load(args.mean)
 
-    x_data = img.transpose(2, 0, 1).astype(np.float32)[np.newaxis, :, :, :]
-    x_data -= mean
+    x_data = np.asarray(img).transpose(0, 1).astype(np.float32)
+    h, w = x_data.shape
+    x_data = np.resize(x_data, (3, h, w))
+    top = (h - model.insize) // 2
+    left = (w - model.insize) // 2
+    bottom = top + model.insize
+    right = left + model.insize
+    x_data -= mean[:, top:bottom, left:right]
+    x_data *= (1.0 / 255.0)  # Scale to [0, 1]
+    x_data = x_data[np.newaxis, :, :, :]
 
     if args.gpu >= 0:
         os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
