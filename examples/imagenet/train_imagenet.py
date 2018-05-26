@@ -159,7 +159,7 @@ def main():
     trainer.extend(extensions.Evaluator(val_iter, model, device=args.gpu),
                    trigger=val_interval)
     if args.org != True:
-        trainer.extend(extensions.ExponentialShift('lr', 0.1), trigger=(400, 'epoch'))
+        trainer.extend(extensions.ExponentialShift('lr', 0.1), trigger=(500, 'epoch'))
     trainer.extend(extensions.dump_graph('main/loss'))
     trainer.extend(extensions.snapshot(), trigger=val_interval)
     trainer.extend(extensions.snapshot_object(
